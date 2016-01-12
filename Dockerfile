@@ -2,6 +2,8 @@
 FROM ubuntu:trusty
 
 ENV TERM xterm
+
+# Let the conatiner know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
 
 # Set the locale
@@ -12,14 +14,15 @@ ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update -qqy && apt-get install -qqy software-properties-common python-software-properties
 
-# Install nginx and php7 packages
-RUN add-apt-repository -y ppa:ondrej/php-7.0 && apt-get update -qqy
+# Install nginx
+RUN nginx=stable && \
+    add-apt-repository ppa:nginx/$nginx && \
+    apt-get update && \
+    apt-get install -qqy nginx
 
-RUN apt-get install -qqy \
-    python-setuptools \
-    curl \
-    supervisor \
-    nginx \
+# Install php7 packages
+RUN add-apt-repository -y ppa:ondrej/php-7.0 && apt-get update -qqy && \
+    apt-get install -qqy \
     php7.0-fpm \
     php7.0-cli \
     php7.0-common \
@@ -35,27 +38,62 @@ RUN apt-get install -qqy \
     php7.0-intl \
     php7.0-bz2
 
-COPY conf/php/www.conf /etc/php/7.0/fpm/pool.d/www.conf
-COPY conf/php/php.ini /etc/php/7.0/fpm/php.ini
-COPY conf/php/php.ini /etc/php/7.0/cli/php.ini
-COPY conf/php/php-fpm.conf /etc/php/7.0/fpm/php-fpm.conf
+# Install other software
+RUN apt-get install -qqy \
+    python-setuptools \
+    curl \
+    supervisor
 
-COPY conf/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY conf/nginx/vhost /etc/nginx/sites-available/default
+# tweak nginx config
+RUN sed -i -e"s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
+    sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \
+    sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf && \
+    echo "daemon off;" >> /etc/nginx/nginx.conf
 
-COPY index.php /usr/share/nginx/html/index.php
+# tweak php-fpm config
+RUN sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/7.0/fpm/php.ini && \
+    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php/7.0/fpm/php.ini && \
+    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php/7.0/fpm/php.ini && \
+    sed -i -e "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" /etc/php/7.0/cli/php.ini && \
+    sed -i -e "s/upload_max_filesize\s*=\s*2M/upload_max_filesize = 100M/g" /etc/php/7.0/cli/php.ini && \
+    sed -i -e "s/post_max_size\s*=\s*8M/post_max_size = 100M/g" /etc/php/7.0/cli/php.ini && \
+    sed -i -e "s/;daemonize\s*=\s*yes/daemonize = no/g" /etc/php/7.0/fpm/php-fpm.conf && \
+    sed -i -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+    sed -i -e "s/pm.max_children = 5/pm.max_children = 9/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+    sed -i -e "s/pm.start_servers = 2/pm.start_servers = 3/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+    sed -i -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 2/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+    sed -i -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 4/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+    sed -i -e "s/pm.max_requests = 500/pm.max_requests = 200/g" /etc/php/7.0/fpm/pool.d/www.conf
+
+# fix ownership of sock file for php-fpm
+RUN sed -i -e "s/;listen.mode = 0660/listen.mode = 0750/g" /etc/php/7.0/fpm/pool.d/www.conf && \
+    find /etc/php/7.0/cli/conf.d/ -name "*.ini" -exec sed -i -re 's/^(\s*)#(.*)/\1;\2/g' {} \;
+
+# nginx site conf
+RUN rm -Rf /etc/nginx/conf.d/* && \
+    rm -Rf /etc/nginx/sites-available/default && \
+    mkdir -p /etc/nginx/ssl/
+ADD ./nginx-site.conf /etc/nginx/sites-available/default.conf
+RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 
 # Supervisor Config
-ADD conf/supervisor/01_php-fpm.conf /etc/supervisor/conf.d/01_php-fpm.conf
-ADD conf/supervisor/02_nginx.conf /etc/supervisor/conf.d/02_nginx.conf
+ADD ./supervisord.conf /etc/supervisord.conf
 
-RUN mkdir /run/php && chown www-data.www-data -R /run/php
-
-# Drupal Initialization and Startup Script
+# Start Supervisord
 ADD ./start.sh /start.sh
 RUN chmod 755 /start.sh
 
-# private expose
+# Setup Volume
+VOLUME ["/usr/share/nginx/html"]
+
+# add test PHP file
+ADD ./index.php /usr/share/nginx/html/index.php
+RUN chown -Rf www-data.www-data /usr/share/nginx/html/
+
+RUN mkdir /run/php && chown www-data.www-data -R /run/php
+
+# Expose Ports
+EXPOSE 443
 EXPOSE 80
 
 CMD ["/bin/bash", "/start.sh"]
