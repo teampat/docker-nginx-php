@@ -83,14 +83,16 @@ ADD ./supervisord.conf /etc/supervisord.conf
 ADD ./start.sh /start.sh
 RUN chmod 755 /start.sh
 
-# Setup Volume
-VOLUME ["/usr/share/nginx/html"]
+RUN usermod -u 1000 www-data
+RUN usermod -a -G users www-data
+
+RUN mkdir -p /var/www/html
+RUN chown -R www-data:www-data /var/www
 
 # add test PHP file
-ADD ./index.php /usr/share/nginx/html/index.php
-RUN chown -Rf www-data.www-data /usr/share/nginx/html/
+ADD ./index.php /var/www/html/index.php
 
-RUN mkdir /run/php && chown www-data.www-data -R /run/php
+RUN mkdir /run/php && chown www-data:www-data -R /run/php
 
 # Expose Ports
 EXPOSE 443

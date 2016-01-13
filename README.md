@@ -6,12 +6,12 @@ This is a Dockerfile to build a container image for nginx and php7.0-fpm.
 
 ## Installation ##
 
-    docker build -t nginx_php7 ./
+    docker build -t touchcast/nginx-php7 ./
 
 ## Running ##
 To run the container:
 
-    docker run --name nginx_php7 -p 8080:80 -d nginx_php7
+    docker run --name nginx_php7 -p 8080:80 -d touchcast/nginx-php7
     
 To SSH into the running container:
 
