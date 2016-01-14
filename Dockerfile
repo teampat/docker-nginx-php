@@ -14,6 +14,9 @@ ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update -qqy && apt-get install -qqy software-properties-common python-software-properties
 
+# Add colours to bashrc
+RUN  sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" /root/.bashrc
+
 # Install nginx
 RUN nginx=stable && \
     add-apt-repository ppa:nginx/$nginx && \
@@ -45,9 +48,9 @@ RUN apt-get install -qqy \
     supervisor
 
 # tweak nginx config
-RUN sed -i -e"s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
-    sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \
-    sed -i -e"s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf && \
+RUN sed -i -e "s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
+    sed -i -e "s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \
+    sed -i -e "s/keepalive_timeout 2/keepalive_timeout 2;\n\tclient_max_body_size 100m/" /etc/nginx/nginx.conf && \
     echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # tweak php-fpm config
@@ -75,6 +78,14 @@ RUN rm -Rf /etc/nginx/conf.d/* && \
     mkdir -p /etc/nginx/ssl/
 ADD ./nginx-site.conf /etc/nginx/sites-available/default.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer
+
+# Install drush
+RUN composer global require drush/drush && \
+    ln -s /root/.composer/vendor/bin/drush /usr/bin/drush
 
 # Supervisor Config
 ADD ./supervisord.conf /etc/supervisord.conf
