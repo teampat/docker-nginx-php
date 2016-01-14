@@ -94,6 +94,8 @@ ADD ./index.php /var/www/html/index.php
 
 RUN mkdir /run/php && chown www-data:www-data -R /run/php
 
+WORKDIR /var/www/html
+
 # Expose Ports
 EXPOSE 443
 EXPOSE 80
