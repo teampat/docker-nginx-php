@@ -45,6 +45,7 @@ RUN add-apt-repository -y ppa:ondrej/php-7.0 && apt-get update -qqy && \
 RUN apt-get install -qqy \
     python-setuptools \
     curl \
+    mysql-client \
     supervisor
 
 # tweak nginx config
