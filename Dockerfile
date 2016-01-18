@@ -46,6 +46,8 @@ RUN apt-get install -qqy \
     python-setuptools \
     curl \
     mysql-client \
+    git \
+    vim \
     supervisor
 
 # tweak nginx config
