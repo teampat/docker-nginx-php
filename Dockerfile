@@ -90,6 +90,11 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 RUN composer global require drush/drush && \
     ln -s /root/.composer/vendor/bin/drush /usr/bin/drush
 
+# Install drupal console
+RUN curl https://drupalconsole.com/installer -L -o drupal.phar && \
+    mv drupal.phar /usr/local/bin/drupal && \
+    chmod +x /usr/local/bin/drupal
+
 # Supervisor Config
 ADD ./supervisord.conf /etc/supervisord.conf
 
