@@ -1,8 +1,6 @@
 # Use the latest Ubuntu base image
 FROM ubuntu:trusty
 
-ENV TERM xterm
-
 # Let the conatiner know that there is no tty
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -43,11 +41,11 @@ RUN add-apt-repository -y ppa:ondrej/php-7.0 && apt-get update -qqy && \
 
 # Install other software
 RUN apt-get install -qqy \
-    python-setuptools \
     curl \
     mysql-client \
     git \
     vim \
+    nano \
     supervisor
 
 # tweak nginx config
@@ -81,20 +79,6 @@ RUN rm -Rf /etc/nginx/conf.d/* && \
     mkdir -p /etc/nginx/ssl/
 ADD ./nginx-site.conf /etc/nginx/sites-available/default.conf
 RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
-
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php && \
-    mv composer.phar /usr/local/bin/composer && \
-    composer global require hirak/prestissimo
-
-# Install drush
-RUN composer global require drush/drush && \
-    ln -s /root/.composer/vendor/bin/drush /usr/bin/drush
-
-# Install drupal console
-RUN curl https://drupalconsole.com/installer -L -o drupal.phar && \
-    mv drupal.phar /usr/local/bin/drupal && \
-    chmod +x /usr/local/bin/drupal
 
 # Supervisor Config
 ADD ./supervisord.conf /etc/supervisord.conf
