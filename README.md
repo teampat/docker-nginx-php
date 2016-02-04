@@ -1,4 +1,4 @@
-# docker-nginx-php7 #
+# docker-nginx-php #
 
 Based on https://github.com/touchcast/docker-nginx-php7
 
