@@ -15,6 +15,8 @@ php: 7.0
 To run the container:
 
     docker run --name nginx-php -p 8080:80 -d teampat/nginx-php
+    
+or
 
     docker run --name nginx-php -p 8080:80 -v /your_code_directory:/var/www/html -d teampat/nginx-php
 
