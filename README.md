@@ -1,7 +1,5 @@
 # docker-nginx-php #
 
-Based on https://github.com/touchcast/docker-nginx-php7
-
 This is a Dockerfile to build a container image for nginx and php7.0-fpm.
 
 ## Version ##
