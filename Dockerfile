@@ -45,7 +45,6 @@ RUN apt-get install -qqy \
     mysql-client \
     git \
     vim \
-    nano \
     supervisor
 
 # tweak nginx config
