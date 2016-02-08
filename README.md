@@ -1,15 +1,25 @@
 # docker-nginx-php #
 
-This is a Dockerfile to build a container image for nginx and php7.0-fpm.
+This is a Dockerfile to build a container image for nginx and php-fpm.
 
 ## Version ##
 nginx: stable
 
-php: 7.0
+php: 5.6, 7.0
 
 ## Installation ##
 
     docker build -t teampat/nginx-php .
+
+## Docker Pull Command ##
+
+    docker pull teampat/nginx-php
+
+For different PHP versions, you can find them under different tags:
+
+- teampat/nginx-php:latest - PHP 7.0
+- teampat/nginx-php:7.0 - PHP 7.0
+- teampat/nginx-php:5.6 - PHP 5.6
 
 ## Running ##
 To run the container:
@@ -24,4 +34,3 @@ or
 To SSH into the running container:
 
     docker exec -i -t <containerID> bash
-    
