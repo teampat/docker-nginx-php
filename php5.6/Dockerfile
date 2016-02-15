@@ -33,16 +33,17 @@ RUN add-apt-repository -y ppa:ondrej/php5-5.6 && apt-get update -qqy && \
     php5-mysql \
     php5-xmlrpc \
     php5-apcu \
-    php5-redis 
-
-# Install other software
-RUN apt-get install -qqy \
-    curl \
-    mysql-client \
-    git \
-    vim \
-    supervisor
-
+    php5-redis \
+    supervisor && \
+    apt-get remove --purge -qqy software-properties-common && \
+    apt-get autoremove -qqy && \
+    apt-get clean && \
+    apt-get autoclean && \
+    echo -n > /var/lib/apt/extended_states && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /usr/share/man/?? && \
+    rm -rf /usr/share/man/??_*
+    
 # tweak nginx config
 RUN sed -i -e"s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
 sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \

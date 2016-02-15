@@ -10,7 +10,7 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
 
-RUN apt-get update -qqy && apt-get install -qqy software-properties-common python-software-properties
+RUN apt-get update -qqy && apt-get install -qqy software-properties-common
 
 # Add colours to bashrc
 RUN  sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" /root/.bashrc
@@ -32,15 +32,16 @@ RUN add-apt-repository -y ppa:ondrej/php-7.0 && apt-get update -qqy && \
     php7.0-mcrypt \
     php7.0-mysql \
     php7.0-xmlrpc \
-    php7.0-opcache
-
-# Install other software
-RUN apt-get install -qqy \
-    curl \
-    mysql-client \
-    git \
-    vim \
-    supervisor
+    php7.0-opcache \
+    supervisor && \
+    apt-get remove --purge -qqy software-properties-common && \
+    apt-get autoremove -qqy && \
+    apt-get clean && \
+    apt-get autoclean && \
+    echo -n > /var/lib/apt/extended_states && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /usr/share/man/?? && \
+    rm -rf /usr/share/man/??_*
 
 # tweak nginx config
 RUN sed -i -e "s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
