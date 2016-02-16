@@ -15,15 +15,12 @@ RUN apt-get update -qqy && apt-get install -qqy software-properties-common
 # Add colours to bashrc
 RUN  sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" /root/.bashrc
 
-# Install nginx
-RUN nginx=stable && \
-    add-apt-repository ppa:nginx/$nginx && \
-    apt-get update && \
-    apt-get install -qqy nginx
-
-# Install php7 packages
-RUN add-apt-repository -y ppa:ondrej/php-7.0 && apt-get update -qqy && \
+# Install nginx & php7 packages
+RUN add-apt-repository ppa:nginx/stable && \
+    add-apt-repository -qqy ppa:ondrej/php && \
+    apt-get update -qqy && \
     apt-get install -qqy \
+    nginx \
     php7.0-fpm \
     php7.0-cli \
     php7.0-curl \
