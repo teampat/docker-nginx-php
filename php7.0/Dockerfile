@@ -16,7 +16,7 @@ RUN apt-get update -qqy && apt-get install -qqy software-properties-common
 RUN  sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" /root/.bashrc
 
 # Install nginx & php7 packages
-RUN add-apt-repository ppa:nginx/stable && \
+RUN add-apt-repository -qqy ppa:nginx/stable && \
     add-apt-repository -qqy ppa:ondrej/php && \
     apt-get update -qqy && \
     apt-get install -qqy \

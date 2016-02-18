@@ -10,13 +10,13 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en  
 ENV LC_ALL en_US.UTF-8  
 
-RUN apt-get update -qqy && apt-get install -qqy software-properties-common python-software-properties
+RUN apt-get update -qqy && apt-get install -qqy software-properties-common
 
 # Add colours to bashrc
 RUN  sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/g" /root/.bashrc
 
 # Install nginx & php5 packages
-RUN add-apt-repository ppa:nginx/stable && \
+RUN add-apt-repository -qqy ppa:nginx/stable && \
     add-apt-repository -qqy ppa:ondrej/php && \
     apt-get update -qqy && \
     apt-get install -qqy \
