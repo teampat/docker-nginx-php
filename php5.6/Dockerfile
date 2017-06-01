@@ -32,8 +32,11 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     php5-mcrypt \
     php5-mysql \
     php5-xmlrpc \
+    php5-xml \
+    php5-bcmath \
     php5-apcu \
     php5-redis \
+    php5-zip \
     git \
     supervisor && \
     apt-get remove --purge -qqy software-properties-common && \
@@ -44,6 +47,16 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /usr/share/man/?? && \
     rm -rf /usr/share/man/??_*
+
+# Install Composer
+ENV COMPOSER_SETUP_SHA 669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410
+
+RUN php -r "readfile('https://getcomposer.org/installer');" > /tmp/composer-setup.php \
+    && php -r "if (hash('SHA384', file_get_contents('/tmp/composer-setup.php')) === getenv('COMPOSER_SETUP_SHA')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('/tmp/composer-setup.php'); echo PHP_EOL; exit(1); } echo PHP_EOL;" \
+    && mkdir -p /composer/bin \
+    && php /tmp/composer-setup.php --install-dir=/composer/bin --filename=composer \
+    && rm /tmp/composer-setup.php \
+    && ln -sf /composer/bin/composer /usr/local/bin/composer
     
 # tweak nginx config
 RUN sed -i -e"s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
