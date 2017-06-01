@@ -32,11 +32,8 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     php5-mcrypt \
     php5-mysql \
     php5-xmlrpc \
-    php5-xml \
-    php5-bcmath \
     php5-apcu \
     php5-redis \
-    php5-zip \
     git \
     supervisor && \
     apt-get remove --purge -qqy software-properties-common && \
