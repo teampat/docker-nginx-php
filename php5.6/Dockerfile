@@ -21,7 +21,7 @@ RUN nginx=stable && \
     apt-get update && \
     apt-get install -qqy nginx
 
-# Install php5.6 packages & git
+# Install php5.6 packages
 RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     apt-get install -qqy \
     php5-fpm \
@@ -34,9 +34,6 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     php5-xmlrpc \
     php5-apcu \
     php5-redis \
-    php5-xml \
-    php5-bcmatch \
-    php5-zip \
     git \
     supervisor && \
     apt-get remove --purge -qqy software-properties-common && \
