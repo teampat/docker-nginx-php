@@ -34,7 +34,7 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     php7.0-xmlrpc \
     php7.0-xml \
     php7.0-opcache \
-    php7.0-bcmatch \
+    php7.0-bcmath \
     php7.0-zip \
     git \
     supervisor && \
