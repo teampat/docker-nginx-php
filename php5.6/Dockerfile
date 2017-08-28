@@ -5,10 +5,10 @@ FROM ubuntu:trusty
 ENV DEBIAN_FRONTEND noninteractive
 
 # Set the locale
-RUN locale-gen en_US.UTF-8  
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8  
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update -qqy && apt-get install -qqy software-properties-common
 
@@ -34,6 +34,9 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     php5-xmlrpc \
     php5-apcu \
     php5-redis \
+    php5-bcmath \
+    php5-mbstring \
+    php5-zip \
     git \
     supervisor && \
     apt-get remove --purge -qqy software-properties-common && \
@@ -54,7 +57,7 @@ RUN php -r "readfile('https://getcomposer.org/installer');" > /tmp/composer-setu
     && php /tmp/composer-setup.php --install-dir=/composer/bin --filename=composer \
     && rm /tmp/composer-setup.php \
     && ln -sf /composer/bin/composer /usr/local/bin/composer
-    
+
 # tweak nginx config
 RUN sed -i -e"s/worker_processes  1/worker_processes 5/" /etc/nginx/nginx.conf && \
 sed -i -e"s/keepalive_timeout\s*65/keepalive_timeout 2/" /etc/nginx/nginx.conf && \

@@ -5,10 +5,10 @@ FROM ubuntu:trusty
 ENV DEBIAN_FRONTEND noninteractive
 
 # Set the locale
-RUN locale-gen en_US.UTF-8  
-ENV LANG en_US.UTF-8  
-ENV LANGUAGE en_US:en  
-ENV LC_ALL en_US.UTF-8  
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update -qqy && apt-get install -qqy software-properties-common
 
@@ -35,7 +35,9 @@ RUN add-apt-repository -y ppa:ondrej/php && apt-get update -qqy && \
     php7.0-xml \
     php7.0-opcache \
     php7.0-bcmath \
+    php7.0-mbstring \
     php7.0-zip \
+    php7.0-redis \
     git \
     supervisor && \
     apt-get remove --purge -qqy software-properties-common && \
